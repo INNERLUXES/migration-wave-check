@@ -1,0 +1,62 @@
+migration-wave-check: examples/orders-estate.yaml
+plan: yaml, "Orders estate", 5 applications (4 move, 1 retained, 0 retired) in 2 waves, limit 3 applications per wave
+areas:
+  Inventory           fail   value-invalid x1
+  Dependencies        fail   dependency-cycle x1, dependency-cross-environment x2
+  Cutover readiness   warn   dns-ttl-longer-than-window x1
+  Waves               warn   wave-over-limit x1, wave-summary x2
+findings: 2 error, 2 warning, 4 info
+
+Inventory (1 finding)
+
+  ERROR    value-invalid  #/applications/2/stateful  line 34
+           The stateful value of the application "inventory-sync" is not yes or no (true, false, yes, no, y, n, 1 or 0), so the checks that need it were skipped for it.
+           basis: "Create a structured plan showing workload name, owner, criticality, migration method, downtime window, and business effects." (Engage stakeholders on migration plan, https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/migrate/plan-migration)
+           fix: Write yes or no (true, false, yes, no, y, n, 1 or 0).
+
+Dependencies (3 findings)
+
+  ERROR    dependency-cycle  #/applications/1/depends_on  line 25
+           The applications "pricing", "orders-api" and "mainframe-billing" depend on each other in a loop, so no order of waves can put each one after what it needs.
+           basis: "Move all directly connected components together to maintain performance and avoid disruptions." (Group dependent systems within the same wave, direct dependencies, https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/migrate/migration-wave-planning)
+           fix: Check the links and remove the one that is not real. If the applications truly need each other, plan them as one unit: one entry of the plan, in one wave.
+
+  INFO     dependency-cross-environment  #/applications/1/depends_on/0  line 25
+           The application "pricing" moves (refactor, wave 1) and depends on "mainframe-billing", which is retained in the source environment. After the move this link crosses from the new environment to the old one. This is not an error; it is a link to plan for.
+           basis: "This is the migration strategy for applications that you want to keep in your source environment or applications that you are not ready to migrate." (Retain, https://docs.aws.amazon.com/prescriptive-guidance/latest/large-migration-guide/migration-strategies.html)
+           basis: "Create a clear plan with timelines and risk management approaches to reduce the time your workload operates across both environments." (Address split-environment operations, https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/migrate/plan-migration)
+           fix: Plan the link across both environments (network path, latency, firewall rules and who owns it), and write down when "mainframe-billing" will move, if ever.
+
+  INFO     dependency-cross-environment  #/applications/4/depends_on/0  line 52
+           The application "mainframe-billing" is retained in the source environment and depends on "orders-api", which moves (replatform, wave 2). After that move this link crosses from the old environment to the new one. This is not an error; it is a link to plan for.
+           basis: "This is the migration strategy for applications that you want to keep in your source environment or applications that you are not ready to migrate." (Retain, https://docs.aws.amazon.com/prescriptive-guidance/latest/large-migration-guide/migration-strategies.html)
+           basis: "Create a clear plan with timelines and risk management approaches to reduce the time your workload operates across both environments." (Address split-environment operations, https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/migrate/plan-migration)
+           fix: Plan the link across both environments (network path, latency, firewall rules and who owns it) for as long as "mainframe-billing" stays behind.
+
+Cutover readiness (1 finding)
+
+  WARNING  dns-ttl-longer-than-window  #/applications/3/dns_ttl_seconds  line 46
+           The DNS TTL of the application "orders-api" is 86,400 seconds and its cutover window is 60 minutes (3,600 seconds). A resolver may keep the old address for as long as the TTL, so clients can still reach the old environment after the window has closed.
+           basis: "a 32 bit signed integer that specifies the time interval that the resource record may be cached before the source of the information should again be consulted." (3.2.1 Format, TTL, https://www.rfc-editor.org/rfc/rfc1035.txt)
+           basis: "Update DNS records and load balancer configurations to direct user traffic to the Azure environment." (Execute near-zero downtime migration, https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/migrate/execute-migration)
+           fix: Lower the TTL to the length of the window or less, and do it at least one old TTL before the cutover starts.
+
+Waves (3 findings)
+
+  WARNING  wave-over-limit  #/waves/0/max_apps  line 7
+           Wave 1 holds 3 applications, and the limit of wave 1 is 2. A wave that is bigger than the team planned for leaves less room to test, to fix and to roll back.
+           basis: "Migration wave planning divides large migration projects into smaller, manageable groups of workloads that can be migrated together." (Migration wave planning, https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/migrate/migration-wave-planning)
+           basis: "Set wave durations based on workload complexity and team capacity." (Define timelines for each wave, https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/migrate/migration-wave-planning)
+           fix: Move 1 application to another wave (keeping dependencies in order), or raise the limit if the team can carry it.
+
+  INFO     wave-summary  wave 1  line 11
+           Wave 1 holds 3 applications: 2 replatform, 1 refactor; 1 is stateful.
+           basis: "By migrating in controlled batches rather than attempting to move everything at once, you gain valuable experience with each wave that improves subsequent migrations." (Migration wave planning, https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/migrate/migration-wave-planning)
+           fix: Nothing to fix; this line shows the shape of the wave.
+
+  INFO     wave-summary  wave 2  line 39
+           Wave 2 holds 1 application: 1 replatform; 0 are stateful.
+           basis: "By migrating in controlled batches rather than attempting to move everything at once, you gain valuable experience with each wave that improves subsequent migrations." (Migration wave planning, https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/migrate/migration-wave-planning)
+           fix: Nothing to fix; this line shows the shape of the wave.
+
+GATE: FAIL - 2 errors

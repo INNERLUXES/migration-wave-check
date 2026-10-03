@@ -1,0 +1,138 @@
+Source: https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/migrate/migration-wave-planning
+
+## Migration wave planning
+
+This article shows you how to organize workloads into structured migration waves for successful Azure adoption. Migration wave planning divides large migration projects into smaller, manageable groups of workloads that can be migrated together. This approach reduces risk and complexity while increasing the speed of your cloud adoption journey. By migrating in controlled batches rather than attempting to move everything at once, you gain valuable experience with each wave that improves subsequent migrations.
+
+## Plan iteratively to adapt to changing requirements
+
+An iterative approach to migration planning groups workloads into waves and adapts to new information discovered during execution. This approach provides flexibility to adjust your migration strategy as you uncover technical challenges, shifting business priorities, and previously unknown dependencies. You should structure your migration using waves because iterative planning delivers better outcomes than rigid, comprehensive plans.
+
+- Create learning cycles that improve subsequent migrations. Each completed wave provides insights into performance requirements, dependency complexities, and organizational capabilities. Use these lessons to refine your approach for remaining workloads. Document what worked well and what challenges emerged to build institutional knowledge.
+
+- Execute current waves while planning future ones. While your team migrates one wave of workloads, use the time to plan the next wave and research future candidates. This parallel approach maximizes team productivity and maintains migration momentum. Assign team members to both execution and planning activities to ensure continuous progress.
+
+- Keep future waves flexible until you have sufficient information. Define only the immediate next wave in detail, leaving later waves at a high level until you understand their specific requirements. This flexibility prevents premature commitments based on incomplete information and allows you to incorporate lessons learned from earlier waves.
+
+## Group dependent systems within the same wave
+
+System dependencies determine your wave composition and migration sequencing. You must identify workloads that communicate or share resources and group them into the same migration wave. This grouping prevents service disruptions caused by broken dependencies and reduces migration complexity.
+
+- Discover all dependencies first. Dependencies between workloads cause service disruptions if not migrated together. Map internal and external dependencies to discover these connections before creating migration groups.
+
+- Analyze dependency types and criticality. Different dependency types require different migration approaches. Distinguish between these categories:
+
+Dependency type
+Description
+Migration approach
+
+Direct dependencies
+Require immediate communication and low latency between components.
+Move all directly connected components together to maintain performance and avoid disruptions.
+
+Indirect dependencies
+Involve occasional or non-critical interactions between systems.
+Migrate together or in separate waves if the connection tolerates latency or supports hybrid use.
+
+Business dependencies
+Depend on organizational or management relationships.
+Group and migrate related workloads and reporting systems together to align with business priorities.
+
+- Group workloads by dependency relationships. Create groups based on shared databases, APIs, authentication services, or network connections. These groups form the foundation of your migration waves and ensure all components required for functionality move together. When uncertainty exists about dependency criticality, group the components together. This conservative approach provides flexibility for future separation.
+
+- Document each dependency group systematically. Tag assets based on their dependency groups using consistent naming conventions. Document each group with:
+
+- Group name and ID - Unique identifier and descriptive name
+
+- Component inventory - All infrastructure elements, applications, and services
+
+- Critical dependencies - Essential connections requiring special handling
+
+- Migration constraints - Business, technical, or timing requirements
+
+- Validate group completeness. Confirm each group includes all necessary components for applications to operate, including supporting infrastructure such as load balancers, DNS records, or caching layers.
+
+## Prioritize workloads using a structured framework
+
+Initial workload selection establishes the foundation for your migration program and builds team confidence through early successes. Your cloud adoption and strategy teams must agree on prioritization criteria that balance business value, technical risk, and organizational learning objectives.
+
+- Review workload details. Work with stakeholders to review business and technical details for each workload. Ensure that downtime or failure impacts are well understood and align with current business priorities. Use the migration adoption plan to verify details like business unit, workload owner, technical dependencies, and criticality classification. These details help prioritize and sequence workloads effectively.
+
+Priority
+Business value
+Effort
+Description
+
+High
+High
+Low
+Quick wins - migrate first for immediate impact
+
+Medium-High
+High
+High
+Strategic investments - plan carefully with adequate resources
+
+Medium-Low
+Low
+Low
+Easy candidates - fill gaps between major migrations
+
+Low
+Low
+High
+Avoid or defer - focus resources on higher-value opportunities
+
+- Start with simpler workloads to reduce risk. Begin migrating workloads that are less complex and have lower risk. This approach helps your team gain confidence and refine migration processes before tackling more challenging workloads. Target internal tools, development environments, or low-usage applications with standalone architectures and minimal integration points.
+
+- Move non-production environments before production. Nonproduction environments provide a safe space to test the full migration process. Migrate development, staging, and QA environments before production to validate readiness. This order allows teams to test configurations, performance, and recovery procedures without affecting users. Use nonproduction migrations to train operations teams.
+
+- Schedule critical systems after you demonstrate initial success. Critical applications require proven migration capabilities before you move them to Azure. Plan these migrations for later waves when your team demonstrates competency with Azure services. Business deadlines such as hardware refresh cycles might require you to prioritize critical applications earlier with more safeguards and extended testing periods.
+
+- Include representative complex workloads to test scenarios. Add one or two complex workloads to each early wave to expose challenges you face with mission-critical applications. Choose workloads that represent common patterns such as multi-tier applications or database-dependent systems.
+
+## Define timelines for each wave
+
+Clear timelines for each wave provide structure to your migration effort. Defined start and end dates help manage scope, set stakeholder expectations, and track progress across teams.
+
+- Set wave durations based on workload complexity and team capacity. Consider your team's Azure experience, availability of subject matter experts, and concurrent project demands when estimating durations. Factor in time for testing, validation, and knowledge transfer activities.
+
+- Include buffer time for unexpected challenges and learning. Add contingency time to initial estimates to account for unforeseen technical issues, dependency discoveries, and troubleshooting activities. Migration projects consistently encounter challenges that weren't apparent during planning. Buffer time prevents schedule pressure that leads to shortcuts or quality compromises.
+
+- Establish milestone checkpoints within each wave. Create review points at 25%, 50%, and 75% completion to assess progress, validate assumptions, and adjust plans when necessary. Use these checkpoints to communicate status to stakeholders, identify blockers early, and make course corrections before they affect downstream activities.
+
+- Plan cutover windows during business-appropriate times. Schedule final cutover activities during established maintenance windows, off-peak hours, or planned downtime periods. Coordinate with business stakeholders to ensure cutover timing aligns with business cycles, regulatory reporting periods, and critical business activities. Document rollback procedures and success criteria for each cutover.
+
+- Adjust timelines based on execution feedback. Migration timelines are dynamic. You should review actual vs. planned durations after each wave and adjust future waves to stay on track.
+
+## Manage your migration plan
+
+Collaborative planning tools enable effective wave management across your adoption team. Azure Boards provides features to track task status, ownership, sequencing, and updates throughout your migration. Configure your planning tool with these work item types:
+
+Work item type
+Purpose
+Example
+
+Epic
+Overall project scope
+Data center migration to Azure
+
+Feature
+Major project component
+Digital estate assessment
+
+Product backlog item
+Specific deliverable
+Azure Migrate deployment
+
+Task
+Individual action item
+Configure on-premises IP address ranges
+
+Bug
+Issue blocking progress
+Firewall blocks Azure Migrate scanning
+
+Test case
+Validation criteria
+Azure Migrate scans complete with zero errors

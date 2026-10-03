@@ -1,0 +1,13 @@
+id,name,wave,strategy,owner,depends_on,stateful,data_sync,rollback,test_plan,dns_ttl_seconds,cutover_window_minutes
+orders-db,Orders database,1,replatform,data-team,,yes,replication,"Keep the source database read-write until sign-off, then switch back",Row counts and checksums on every table,300,120
+pricing,Pricing service,1,refactor,pricing-team,mainframe-billing,no,none,Route price calls back to the old service,Price calculation regression suite,300,60
+inventory-sync,Inventory sync job,1,replatform,web-team,,no,none,Re-enable the old cron job,Compare stock levels after one run,,
+orders-api,Orders API,2,replatform,orders-team,orders-db;pricing,no,none,Redeploy the previous container image on the old hosts,Contract tests and the checkout suite,300,60
+notifications,Order notifications,2,rehost,orders-team,email-relay,no,none,Switch the queue consumer back to the old host,Send one order mail to each test inbox,300,30
+catalog,Product catalog,2,rehost,web-team,inventory-sync,no,none,Point DNS back to the old catalog host,Catalog browse suite,300,60
+orders-web,Orders web shop,3,rehost,web-team,orders-api,no,none,"Point DNS back to the old load balancer, then drain the new one",Checkout end-to-end suite,300,30
+reports,Sales reports,3,rehost,bi-team,orders-db,no,none,Restore the old report server from its snapshot,Compare the monthly sales report with the old one,600,60
+search,Product search,3,rehost,web-team,orders-api,no,none,Point the search alias back,Search smoke tests,300,30
+legacy-ledger,Old ledger,,retire,finance-it,,yes,,,,,
+mainframe-billing,Billing on the mainframe,,retain,billing-team,,yes,,,,,
+email-relay,Mail relay,,retain,platform-team,,no,,,,,

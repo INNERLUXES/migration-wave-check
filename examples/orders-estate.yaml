@@ -1,0 +1,52 @@
+# The orders estate as a YAML plan, with the wave limits written in the plan itself.
+plan:
+  name: Orders estate
+  max_apps_per_wave: 3
+waves:
+  - wave: 1
+    max_apps: 2
+applications:
+  - id: orders-db
+    name: Orders database
+    wave: 1
+    strategy: replatform
+    owner: data-team
+    stateful: true
+    data_sync: replication
+    rollback: Keep the source database read-write until sign-off, then switch back
+    test_plan: Row counts and checksums on every table
+    dns_ttl_seconds: 300
+    cutover_window_minutes: 120
+  - id: pricing
+    name: Pricing service
+    wave: 1
+    strategy: refactor
+    owner: pricing-team
+    depends_on: [mainframe-billing]
+    stateful: false
+    rollback: Route price calls back to the old service
+    test_plan: Price calculation regression suite
+  - id: inventory-sync
+    name: Inventory sync job
+    wave: 1
+    strategy: replatform
+    owner: web-team
+    stateful: maybe
+    rollback: Re-enable the old cron job
+    test_plan: Compare stock levels after one run
+  - id: orders-api
+    name: Orders API
+    wave: 2
+    strategy: replatform
+    owner: orders-team
+    depends_on: [orders-db, pricing, orders-api]
+    stateful: false
+    rollback: Redeploy the previous container image on the old hosts
+    test_plan: Contract tests and the checkout suite
+    dns_ttl_seconds: 86400
+    cutover_window_minutes: 60
+  - id: mainframe-billing
+    name: Billing on the mainframe
+    strategy: retain
+    owner: billing-team
+    depends_on: [orders-api]

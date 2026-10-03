@@ -1,0 +1,196 @@
+Source: https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/migrate/plan-migration
+
+## Plan your migration
+
+A migration plan defines the specific order, timing, and approach for migrating workloads to Azure. This plan translates high-level migration strategies into actionable deployment sequences. It builds on the cloud adoption plan by addressing tactical decisions such as workload prioritization, migration sequencing, and data transfer methods.
+
+Prerequisites: Migration adoption plan, Azure landing zone
+
+## Assess migration readiness and skills
+
+A readiness assessment ensures that your team has the skills and support needed to execute the migration plan. This step identifies capability gaps and accelerates progress through targeted training or external support.
+
+- Evaluate your team's Azure skills. Review your team's experience with Azure services, migration tools, and cutover. This evaluation helps you identify specific knowledge gaps and determine what training your team needs to succeed.
+
+- Engage external expertise when needed. If your team lacks experience with cloud migration, bring in Microsoft or a Microsoft partner. External experts can validate your migration strategy, recommend appropriate tools, and help establish realistic timelines. This support reduces risk and speeds up your migration, especially for complex or large-scale projects.
+
+## Choose your data migration path
+
+A data migration path is how you move data from your current location to Azure. The right path ensures your data transfers securely, quickly, and cost-effectively. First, check what network connections you have available, ExpressRoute, VPN, or public internet, to understand your options.
+
+- Use ExpressRoute when you have it. ExpressRoute gives you a private, dedicated connection to Azure that's faster and more secure than internet connections. If you already have ExpressRoute or plan to get it, use this method for all your workloads. Keep in mind that ExpressRoute requires setup time and has data transfer costs.
+
+- Use VPN if ExpressRoute isn't available. Choose a VPN when you need secure data transfer but don't have ExpressRoute. A VPN creates an encrypted tunnel over the internet to Azure, though it's typically slower than ExpressRoute. Make sure you have a VPN Gateway configured in Azure before starting.
+
+- Use Azure Data Box for large amounts of data. Data Box is best for offline migrations with lots of data. Microsoft ships you a physical device to copy your data onto, then you ship it back. This option avoids using your network but takes the longest due to shipping time.
+
+- Use public internet for less sensitive data. This option works when your data doesn't need encryption and you can't use ExpressRoute or Data Box. While this method is available everywhere, it's the least secure and can slow down your other internet activities.
+
+Data Migration Path
+When to use
+Pros
+Cons
+
+ExpressRoute
+Any workload when available
+Secure and fast
+Setup required, costs money
+
+VPN
+Secure transfers when no ExpressRoute
+More secure than public internet
+Requires setup, slower than ExpressRoute
+
+Azure Data Box
+Offline migration with large amounts of data
+Moves data without using your network
+Slowest method due to shipping
+
+Public internet
+Nonsensitive data and can't use Data Box
+Works everywhere
+Least secure, uses your bandwidth
+
+## Determine the migration sequence
+
+Migration sequencing reduces risk and builds team confidence by establishing a logical order for workload migration. The sequence determines which workloads move first and how dependent components migrate together to prevent service disruptions. Organize large portfolios into migration waves. For detailed guidance on wave planning, see Migration wave planning.
+
+## Find dependencies
+
+- Discover all dependencies first. Dependencies between workloads cause service disruptions if not migrated together. Map internal and external dependencies to discover these connections before creating migration groups.
+
+- Analyze dependency types and criticality. Different dependency types require different migration approaches. Distinguish between these categories:
+
+Dependency type
+Description
+Migration approach
+
+Direct dependencies
+Require immediate communication and low latency between components.
+Move all directly connected components together to maintain performance and avoid disruptions.
+
+Indirect dependencies
+Involve occasional or non-critical interactions between systems.
+Migrate together or in separate waves if the connection tolerates latency or supports hybrid use.
+
+Business dependencies
+Depend on organizational or management relationships.
+Group and migrate related workloads and reporting systems together to align with business priorities.
+
+- Group workloads by dependency relationships. Create groups based on shared databases, APIs, authentication services, or network connections. These groups form the foundation of your migration waves and ensure all components required for functionality move together. When uncertainty exists about dependency criticality, group the components together. This conservative approach provides flexibility for future separation.
+
+- Document each dependency group systematically. Tag assets based on their dependency groups using consistent naming conventions. Document each group with:
+
+- Group name and ID - Unique identifier and descriptive name
+
+- Component inventory - All infrastructure elements, applications, and services
+
+- Critical dependencies - Essential connections requiring special handling
+
+- Migration constraints - Business, technical, or timing requirements
+
+- Validate group completeness. Confirm each group includes all necessary components for applications to operate, including supporting infrastructure such as load balancers, DNS records, or caching layers.
+
+## Address split-environment operations
+
+- Plan for unmovable dependencies. Identify components that must stay in your source environment due to technical or regulatory reasons. Document why they can't move, how they connect to other systems, and what data they share. This documentation helps you create strategies for these components to work smoothly with your cloud systems.
+
+- Minimize split-environment operation time. When components can move to the cloud later but not immediately, document their connections and data flows with cloud systems. Create a clear plan with timelines and risk management approaches to reduce the time your workload operates across both environments. Consider delaying the migration until more components can move together.
+
+- Connect environments effectively. Use integration methods like API gateways, message queues, and data synchronization to create reliable connections between your cloud workloads and source environment components. These approaches reduce delays, improve security, and prepare the way for eventually moving remaining components to the cloud.
+
+## Prioritize workloads to migrate
+
+- Review workload details. Work with stakeholders to review business and technical details for each workload. Ensure that downtime or failure impacts are well understood and align with current business priorities. Use the migration adoption plan to verify details like business unit, workload owner, technical dependencies, and criticality classification. These details help prioritize and sequence workloads effectively.
+
+Priority
+Business value
+Effort
+Description
+
+High
+High
+Low
+Quick wins - migrate first for immediate impact
+
+Medium-High
+High
+High
+Strategic investments - plan carefully with adequate resources
+
+Medium-Low
+Low
+Low
+Easy candidates - fill gaps between major migrations
+
+Low
+Low
+High
+Avoid or defer - focus resources on higher-value opportunities
+
+- Start with simpler workloads to reduce risk. Begin migrating workloads that are less complex and have lower risk. This approach helps your team gain confidence and refine migration processes before tackling more challenging workloads. Target internal tools, development environments, or low-usage applications with standalone architectures and minimal integration points.
+
+- Move non-production environments before production. Nonproduction environments provide a safe space to test the full migration process. Migrate development, staging, and QA environments before production to validate readiness. This order allows teams to test configurations, performance, and recovery procedures without affecting users. Use nonproduction migrations to train operations teams.
+
+- Schedule critical systems after you demonstrate initial success. Critical applications require proven migration capabilities before you move them to Azure. Plan these migrations for later waves when your team demonstrates competency with Azure services. Business deadlines such as hardware refresh cycles might require you to prioritize critical applications earlier with more safeguards and extended testing periods.
+
+- Include representative complex workloads to test scenarios. Add one or two complex workloads to each early wave to expose challenges you face with mission-critical applications. Choose workloads that represent common patterns such as multi-tier applications or database-dependent systems.
+
+## Create a detailed migration schedule
+
+- Set start and end dates for each migration. Include buffer time for testing and issue resolution to ensure smooth execution. This detailed scheduling reduces the risk of delays and supports effective resource planning.
+
+- Align timelines with business events. Avoid scheduling migrations during critical business periods such as financial close, product launches, or holiday seasons. This alignment reduces the risk of business disruption and ensures stakeholder confidence.
+
+- Use project management tools to track progress. Use tools like Azure DevOps to manage dependencies, track milestones, and communicate changes effectively. These tools provide visibility into migration progress and support proactive issue resolution.
+
+## Choose the migration method for each workload
+
+Migration methods fall into two categories: migration with downtime and migration with near-zero downtime. Choose the best migration method for each workload based on its downtime tolerance and business criticality.
+
+- Choose downtime migration for workloads that tolerate planned outages. Downtime migration is simpler and faster because it doesn't require real-time synchronization between source and target environments. This method works well for noncritical workloads such as development environments, test systems, or applications with scheduled maintenance windows. Document the acceptable downtime duration for each workload and schedule migrations during low-usage periods to minimize business effects.
+
+- Choose near-zero downtime migration for critical workloads. Near-zero downtime migration ensures that critical workloads remain operational during the transition through continuous data replication and cutover techniques. This method is essential for customer-facing applications, real-time transaction systems, or workloads with strict service level agreements. Validate that the workload architecture supports continuous replication and that network bandwidth can handle real-time data transfer. Test connectivity and replication processes in a nonproduction environment to confirm readiness for this migration method.
+
+Migration Method
+When to use
+Pros
+Cons
+
+Downtime migration
+Noncritical workloads, development environments
+Simpler process, faster execution
+Service interruption required
+
+Near-zero downtime migration
+Critical workloads, strict SLAs
+Minimal service disruption
+Complex setup and requires testing
+
+## Define rollback plan
+
+A rollback plan enables teams to quickly reverse changes when a deployment fails or introduces risk. A well-defined plan minimizes downtime, limits business impact, and maintains system reliability. Always establish rollback criteria and procedures before initiating any migration or deployment.
+
+- Define failed deployment. Collaborate with business stakeholders, workload owners, and operations teams to decide what counts as a failed deployment. Examples include failed health checks, poor performance, security issues, or unmet success metrics. This definition ensures rollback decisions align with your organization's risk tolerance. Include specific conditions that trigger a rollback in your deployment plan, such as CPU usage limits, response time thresholds, or error rates. This evaluation makes rollback decisions clear and consistent during incidents.
+
+- Automate rollback steps in CI/CD pipelines. Use tools like Azure Pipelines or GitHub Actions to automate rollback tasks. For example, set up pipelines to redeploy a prior version if health checks fail.
+
+- Create workload-specific rollback instructions. Write rollback steps that match your workload type, environment, and deployment method. For example, IaC deployments require reapplying past templates. App rollbacks involve redeploying a prior container image. Attach rollback scripts, configuration snapshots, and IaC templates to your rollback plan. These assets speed up the process and reduce the need for manual steps.
+
+- Test rollback procedures. Simulate deployment failures in a staging environment to confirm your rollback works. Find and fix gaps in automation, permissions, or dependencies. Verify that the rollback procedure restores the system to a stable, known-good state.
+
+- Improve rollback strategies. After each deployment or rollback, review what worked and what didn't. Update rollback rules, steps, and scripts based on lessons learned. Factor in design changes or new tools. Keep your guides updated so rollback plans stay current and useful.
+
+## Engage stakeholders on migration plan
+
+Stakeholder approval validates that your migration plan meets business requirements and risk tolerance. You should secure formal approval before executing migrations.
+
+- Document the migration plan with business justification. Create a structured plan showing workload name, owner, criticality, migration method, downtime window, and business effects. Include rationale for each approach and explain how it minimizes risk.
+
+- Present tested rollback procedures. Show specific rollback plans with steps, timeframes, and success criteria. Include automated and manual capabilities. Document preproduction test results to prove quick service restoration.
+
+- Validate schedules against business constraints. Review timelines with stakeholders to avoid critical business periods, maintenance freezes, and seasonal peaks. Provide alternative options with trade-offs if conflicts exist.
+
+- Obtain formal approval and rollback authority. Secure written approval from stakeholders for the migration plan and rollback procedures. Define decision-making authority and establish emergency communication channels.
+
+- Define success criteria and review checkpoints. Set measurable metrics including performance benchmarks, functionality validation, and user acceptance criteria. Schedule formal review points for go/no-go decisions.
