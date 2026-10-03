@@ -1,0 +1,49 @@
+{
+  "name": "migration-wave-check",
+  "version": "1.0.0",
+  "description": "Read an application migration wave plan (CSV, JSON or YAML) and report what makes a wave unsafe to run: an application that moves before what it depends on, dependency loops and unknown ids, a dependency on an application planned for retire, a move with no rollback or test plan, stateful data with no sync method, a DNS TTL longer than the cutover window, a missing strategy or owner, and a wave over its limit. Each finding has its row or JSON pointer and line and quotes the guidance page or the RFC it rests on. Fetches nothing, no dependencies.",
+  "type": "module",
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "bin": {
+    "migration-wave-check": "bin/migration-wave-check.js"
+  },
+  "files": [
+    "bin",
+    "src",
+    "docs",
+    "examples",
+    "research",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "test": "node --test \"test/*.test.js\"",
+    "test:coverage": "node --test --experimental-test-coverage \"test/*.test.js\"",
+    "check": "node tools/check.mjs",
+    "example": "node tools/example.mjs"
+  },
+  "keywords": [
+    "migration",
+    "cloud-migration",
+    "migration-waves",
+    "7rs",
+    "cutover",
+    "rollback",
+    "dependencies",
+    "linter",
+    "cli"
+  ],
+  "author": "INNERLUXES <info@innerluxes.dev>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/INNERLUXES/migration-wave-check.git"
+  },
+  "homepage": "https://innerluxes.dev/application/migration"
+}
