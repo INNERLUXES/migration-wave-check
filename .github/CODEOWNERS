@@ -1,0 +1,13 @@
+# Every change is reviewed by a maintainer.
+* @innerluxesdev
+
+# The strategy names and sentences come from the saved guidance pages and RFCs, and the readers and the checks decide every line of the report; changes need extra care.
+/src/data.js @innerluxesdev
+/research/ @innerluxesdev
+/src/csv.js @innerluxesdev
+/src/json.js @innerluxesdev
+/src/yaml.js @innerluxesdev
+/src/plan.js @innerluxesdev
+/src/files.js @innerluxesdev
+/src/rules.js @innerluxesdev
+/src/check.js @innerluxesdev
